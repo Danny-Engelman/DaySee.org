@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <title>DaySee.org Clock</title>
+
+    <script type="application/javascript">
+
+        var displaySeconds = true;                      // display the seconds hand
+
+        var traceinfo = 0;                              // developers aid
+
+    </script>
+    <style>
+        #DaySee_Container { /* container for Canvas */
+            background: black;
+        / / border: 12 px solid green;
+        }
+
+    </style>
+    <style>
+        body {
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* disable any scroll bar */
+        }
+
+        #DaySee_Container { /* container for Canvas */
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            margin: 0 auto;
+            display: block;
+            box-sizing: border-box;
+        }
+
+        #clockCanvas {
+            background: transparent; /* background color for the whole CANVAS */
+            position: absolute; /* CANVAS covers the whole parent element */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #DaySee_Controls {
+            visibility: hidden;
+            position: relative;
+            background: transparent;
+            width: 100%;
+            opacity: .8;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 1vh 1vw;
+            color: grey;
+        }
+    </style>
+    <style id="portrait" media="all and (orientation:portrait)">
+    </style>
+    <style id="landscape" media="all and (orientation:landscape)">
+    </style>
+    <style>
+        #DaySee_Language {
+            position: relative;
+            width: 100%;
+            height: 70px;
+            top: 50%;
+            display: flex;
+            justify-content: space-between;
+            box-sizing: border-box;
+            border: 5px solid grey;
+            background: grey;
+        }
+
+        #DaySee_Language svg {
+            width: 12%;
+            height: 100%;
+            opacity: .5;
+            cursor: pointer;
+        }
+
+        #DaySee_Language svg {
+            transition: 200ms;
+            transition-timing-function: ease-in-out;
+            -webkit-transition: 200ms;
+            -webkit-transition-timing-function: ease-in-out;
+        }
+    </style>
+    <style id="daysee_logo">
+        #dayseeURL {
+            position: absolute;
+            bottom: 0;
+            left: .1vw;
+            font-size: 1vw;
+            color: whitesmoke;
+            opacity: .5;
+        }
+    </style>
+</head>
+<body>
+<div id="DaySee_Container" onclick="showDaySeeControls(!showingDaySeeControls)">
+    <div id="programmersError"></div>
+    <canvas id="clockCanvas"></canvas>
+    <div id="DaySee_Controls">
+        <div onclick="event.stopPropagation();showDaySeeControls(false);">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="whitesmoke" width="24" height="24" viewBox="0 0 24 24">
+                <path d="M16 16h-8v-8h8v8zm-10-7.172v-2.828h2.828l-3.414-3.414 2.586-2.586h-8v8l2.586-2.586 3.414 3.414zm2.828 9.172h-2.828v-2.828l-3.414 3.414-2.586-2.586v8h8l-2.586-2.586 3.414-3.414zm9.172-2.828v2.828h-2.828l3.414 3.414-2.586 2.586h8v-8l-2.586 2.586-3.414-3.414zm-2-15.172l2.586 2.586-3.414 3.414h2.828v2.828l3.414-3.414 2.586 2.586v-8h-8z"/>
+            </svg>
+        </div>
+        <div id="DaySee_Language">
+
+            <svg data-daysee-language="nl" viewBox="0 0 12 9">
+                <path fill="#ae1c28" d="M0 0h12v3H0z"/>
+                <path fill="white" d="M0 3h12v3H0z"/>
+                <path fill="#21468b" d="M0 6h12v3H0z"/>
+            </svg>
+
+            <svg data-daysee-language="en" viewBox="0 0 640 480">
+                <defs>
+                    <clipPath id="a">
+                        <path fill-opacity=".67" d="M-85.333 0h682.67v512h-682.67z"/>
+                    </clipPath>
+                </defs>
+                <g clip-path="url(#a)" transform="translate(80) scale(.94)">
+                    <g stroke-width="1pt">
+                        <path fill="#006" d="M-256 0H768.02v512.01H-256z"/>
+                        <path d="M-256 0v57.244l909.535 454.768H768.02V454.77L-141.515 0H-256zM768.02 0v57.243L-141.515 512.01H-256v-57.243L653.535 0H768.02z"
+                              fill="#fff"/>
+                        <path d="M170.675 0v512.01h170.67V0h-170.67zM-256 170.67v170.67H768.02V170.67H-256z"
+                              fill="#fff"/>
+                        <path d="M-256 204.804v102.402H768.02V204.804H-256zM204.81 0v512.01h102.4V0h-102.4zM-256 512.01L85.34 341.34h76.324l-341.34 170.67H-256zM-256 0L85.34 170.67H9.016L-256 38.164V0zm606.356 170.67L691.696 0h76.324L426.68 170.67h-76.324zM768.02 512.01L426.68 341.34h76.324L768.02 473.848v38.162z"
+                              fill="#c00"/>
+                    </g>
+                </g>
+            </svg>
+
+            <svg data-daysee-language="it" viewBox="0 0 12 9">
+                <path fill="#ce2b37" d="M0 0h12v9H0z"/>
+                <path fill="#fff" d="M0 0h8v9H0z"/>
+                <path fill="#009246" d="M0 0h4v9H0z"/>
+            </svg>
+
+            <svg data-daysee-language="de" viewBox="0 0 12 9">
+                <path d="M0 0h12v3H0z"/>
+                <path fill="#d00" d="M0 3h12v3H0z"/>
+                <path fill="#ffce00" d="M0 6h12v3H0z"/>
+            </svg>
+
+            <svg data-daysee-language="fr" viewBox="0 0 12 9">
+                <path fill="#f31830" d="M0 0h12v9H0z"/>
+                <path fill="#fff" d="M0 0h8v9H0z"/>
+                <path fill="#00267f" d="M0 0h4v9H0z"/>
+            </svg>
+
+            <svg data-daysee-language="da" viewBox="0 0 640 480">
+                <path fill="#c60c30" d="M0 0h640.1v480H0z"/>
+                <path fill="#fff" d="M205.714 0h68.57v480h-68.57z"/>
+                <path fill="#fff" d="M0 205.714h640.1v68.57H0z"/>
+            </svg>
+
+            <svg data-daysee-language="es" viewBox="0 0 12 9">
+                <path fill="#c60b1e" d="M0 0h12v9H0z"/>
+                <path fill="#ffc400" d="M0 2.25h12v4.5H0z"/>
+            </svg>
+
+            <svg data-daysee-language="pt" viewBox="0 0 12 9">
+                <path fill="red" d="M0 0h12v9H0z"/>
+                <path fill="#060" d="M0 0h5v9H0z"/>
+            </svg>
+
+        </div>
+    </div>
+    <div id="dayseeURL" onclick="document.location='http://daysee.org';">www.DaySee.org</div>
+</div>
+
+<script type="application/javascript">
+
+    var dayseeControlsDOMelement = document.getElementById('DaySee_Controls');
+    var dayseeIMG = new Image();
+    dayseeIMG.src = 'data:image/png;base64,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';
+
+    // get primary language
+    var language = getUrlParameter('lang');                     // is there a URL parameter?
+    if (!language) {
+        try {
+            language = navigator.language.split('-')[0];        // get language from browser
+        } catch (e) {
+            language = navigator.userLanguage.split('-')[0];    // IE 10 Browser
+        }
+    }
+    language = 'da';
+
+    //region ------------------------------------------------------------------------------------- ### Generic functions
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+    //noinspection JSUnusedLocalSymbols
+    function reloadWebPage(seconds) {
+        window.setTimeout(function () {
+            location.reload();
+        }, 1000 * seconds);
+    }
+    var showingDaySeeControls = false;
+    function showDaySeeControls(show) {
+        showingDaySeeControls = show;
+        dayseeControlsDOMelement.style.visibility = show ? 'visible' : 'hidden';
+        if (show) {
+            fullscreen_Off();
+            language_highlight(language);
+            //attach click handlers to language flags
+            [].map.call(document.querySelectorAll("[data-daysee-language]"), function (svgflag) {
+                console.info(svgflag, language);
+                svgflag.addEventListener('click', function () {
+                    event.stopPropagation();
+                    language_select(this.getAttribute('data-daysee-language'));
+                    drawFullscreen();
+                });
+            });
+        } else {
+            fullscreen_On();
+        }
+    }
+
+    function language_highlight(lang) {
+        var element = document.querySelector("[data-daysee-language='" + lang + "']");
+        if (element) element.style.opacity = 1;
+    }
+    function language_unselect(lang) {
+        [].map.call(document.querySelectorAll("[data-daysee-language]"), function (svgflag) {
+            svgflag.style.opacity = .5;
+        });
+    }
+    function language_select(lang) {
+        language_unselect();
+        language = lang;
+        language_highlight(language);
+    }
+    var isFullScreen = false;
+    function fullscreen_On() {
+        isFullScreen = true;
+        try {                                           // Chrome & Edge
+            document.documentElement.webkitRequestFullscreen();
+        } catch (e) {                                   // IE 10
+            document.documentElement.msRequestFullscreen();
+        }
+    }
+    function fullscreen_Off() {
+        isFullScreen = false;
+        try {                                           // Chrome & Edge
+            document.webkitExitFullscreen();
+        } catch (e) {                                   // IE 10
+            document.msExitFullscreen();
+        }
+    }
+    function toggleFullScreen(forcestate) {
+        try {                                           // Chrome & Edge
+            if (!document.webkitFullscreenElement || forcestate) {
+                showDaySeeControls();
+                document.documentElement.webkitRequestFullscreen();
+                isFullScreen = true;
+            } else {
+                if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                    isFullScreen = false;
+                }
+            }
+        } catch (e) {                                   // IE 10
+            if (!document.msFullscreenElement || forcestate) {
+                showDaySeeControls();
+                document.documentElement.msRequestFullscreen();
+                isFullScreen = true;
+            } else {
+                if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                    isFullScreen = false;
+                }
+            }
+        }
+    }
+
+    function programmersError(err) {
+        if (console) console.error(err);
+        document.getElementById('programmersError').innerHTML = err;
+    }
+
+    //endregion -------------------------------------------------------------------------------------- Generic functions
+    //region ------------------------------------------------------------------------------------- ### application configuration
+
+    var clock_faceColor = 'black';
+    var clock_letterColor = 'wheat';//'antiquewhite';
+    var clock_letterBorder = 'black';
+    var clock_letterBorderThinkness = 3;
+    var clock_handColor = clock_letterColor;
+    var clock_handBorder = clock_faceColor;
+
+    var display24hours = false;                     // display time on the analog clock in 1 - 24 hour notation
+
+    //endregion -------------------------------------------------------------------------------------- application configuration
+
+    var canvasWidth,
+        canvasHeight,
+        canvasHalfWidth,
+        canvasHalfHeight;
+
+    var clockCenter_X, clockCenter_Y;
+
+    var deviceOrientationPortrait;
+
+    var clockDate;
+    var clockTestDate = getUrlParameter('date');
+    //clockTestDate = '9/22/2017 21:10:21';
+    var clockfullHours;
+    var clockHours;
+    var clockMinutes;
+    var clockSeconds;
+    var dayparts;           // Array with day part name based on language: ['evening','afternoon','morning','night']
+    var dateFontSize = 50;
+    var clockTop;
+    var clockBottom;
+    var clockHeight;
+    var clockRadius;
+    var clockOffset_X;      // X offset from 0,0 center Canvas
+    var clockOffset_Y;      // Y offset from 0,0 center Canvas
+    var daysee = {};
+
+    var analogClockOptions = {
+        hands: {
+            "hour": {
+                length: .4,
+                width: .125,
+                border: clock_handBorder,
+                fill: clock_handColor
+            },
+            "minute": {
+                length: .67,
+                width: .1,
+                border: clock_handBorder,
+                fill: clock_handColor
+            },
+            "second": {
+                length: .65,
+                width: .01,
+                border: "transparent",
+                fill: "grey"
+            }
+        }
+    };
+
+    //region ------------------------------------------------------------------------------------- ### date text calculation
+
+
+    //endregion -------------------------------------------------------------------------------------- date text calculation
+    //region ------------------------------------------------------------------------------------- ### clock styling
+
+    showDaySeeControls(true);
+
+    function getDayAndDate() {
+        try {
+            var daypartsLocale = {
+                /*  english */ "en": "evening,afternoon,morning,night",
+                /*  spanish */ "es": "noche,tarde,mañana,noche",
+                /*   french */ "fr": "soir,l'après-midi,le matin,la nuit",
+                /*    dutch */ "nl": "avond,middag,ochtend,nacht",
+                /*   german */ "de": "Abend,Nachmittag,Morgen,Nacht",
+                /*   danish */ "da": "aften,eftermiddag,morgen,aften",
+                /*  italian */ "it": "sera,pomeriggio,mattina,sera",
+                /* portuges */ "pt": "Noite,tarde,manhã,noite"
+            };
+
+
+            if (daypartsLocale.hasOwnProperty(language)) {
+                dayparts = daypartsLocale[language];
+            } else {
+                dayparts = daypartsLocale['en'];            // default language when no language is found
+            }
+            dayparts = dayparts.split(',');                 // create an Array with the 4 values
+
+            if (clockTestDate) {
+                clockDate = new Date(clockTestDate);
+            } else {
+                clockDate = new Date();
+            }
+            //clockTestDate = false;
+
+            clockfullHours = clockDate.getHours();
+            clockMinutes = clockDate.getMinutes();
+            clockSeconds = clockDate.getSeconds();
+            clockHours = clockfullHours % 12;
+
+            var dateString = clockDate.toLocaleDateString(language, {
+
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }).split(' ');
+
+            daysee.fullDate = {
+                dayname: dateString[0],
+                daypart: dayparts[clockfullHours > 17 ? 0 : clockfullHours > 11 ? 1 : clockfullHours > 5 ? 2 : 3],//evening,night,morning,afternoon
+                day: dateString[1],
+                month: dateString[2],
+                year: dateString[3]
+            };
+            daysee.DM = dateString[1] + '  ' + dateString[2];
+            daysee.DMY = dateString[1] + '  ' + dateString[2] + '  ' + dateString[3];
+        } catch (err) {
+            programmersError(err);
+        }
+    }
+
+
+    //endregion -------------------------------------------------------------------------------------- clock styling
+
+    //region ------------------------------------------------------------------------------------- ### init
+    var canvasDOMelement = document.getElementById("clockCanvas");
+    var ctx = canvasDOMelement.getContext("2d");
+
+    var clockInterval_Seconds;
+    var clockInterval_Minutes;
+    var clockInterval_Hours;
+
+    window.addEventListener("resize", function () {//not all browsers support orientationchange event
+        if (clockInterval_Seconds) clearInterval(clockInterval_Seconds);
+        if (clockInterval_Minutes) clearInterval(clockInterval_Minutes);
+        if (clockInterval_Hours) clearInterval(clockInterval_Hours);
+        drawFullscreen();
+    }, false);
+
+    drawFullscreen();
+
+    //endregion -------------------------------------------------------------------------------------- init
+
+    function drawFullscreen() {
+        try {
+            daysee._Container = document.getElementById('DaySee_Container').getBoundingClientRect();
+            daysee.height = parseInt(daysee._Container.height);
+
+            canvasWidth = parseInt(daysee._Container.width);
+            canvasHeight = parseInt(daysee._Container.height);
+
+            canvasHalfWidth = parseInt(canvasWidth / 2);
+            canvasHalfHeight = parseInt(canvasHeight / 2);
+
+            daysee.top = -canvasHalfHeight;
+            daysee.bottom = canvasHalfHeight;
+
+            canvasDOMelement.height = canvasHeight;
+            canvasDOMelement.width = canvasWidth;
+
+
+            deviceOrientationPortrait = canvasWidth < canvasHeight;
+
+            if (deviceOrientationPortrait) {
+                clockCenter_X = canvasHalfWidth;
+                clockCenter_Y = canvasHalfHeight;
+            } else {                                //landscape orientation
+                clockCenter_X = canvasHalfWidth;
+                clockCenter_Y = canvasHalfHeight;
+            }
+
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+//region ------------------------------------------------------------------------------------- ### draw analog functions
+            function fontSize(n) {
+                ctx.font = parseInt(n) + "px arial";
+            }
+
+            function drawLine(x1, y1, x2, y2, width, color) {
+                ctx.lineWidth = width || 2;
+                ctx.strokeStyle = color || 'red';
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+
+            function drawHline(y, color, width) {
+                drawLine(-100, y, 100, y, width, color);
+            }
+
+            function drawClockHand(handoptions, direction, radius) {
+                var handwidth = radius * handoptions.width;
+                ctx.beginPath();
+
+                ctx.moveTo(0, 0);                               // move to center of clock
+                ctx.lineWidth = handwidth;
+                ctx.strokeStyle = handoptions.border;
+                ctx.lineCap = "round";
+                ctx.rotate(direction);                          // rotate in the (seconds) direction
+
+                ctx.lineTo(0, -radius * handoptions.length);    // draw a line with length
+                ctx.stroke();
+
+                ctx.rotate(-direction);//back to 0,0 origin     // return to center of clock
+
+                ctx.lineWidth = handwidth * .8;                 // smaller width
+                ctx.strokeStyle = handoptions.fill;             // stroke inner color
+                ctx.stroke();
+            }
+
+            function drawText(txt, x, y, fontsize, maxfontsize, fittowidth, cleanwidth) {
+                try {
+                    fontSize(fontsize);
+                    if (fittowidth) {
+                        fontsize = 200;
+                        //fit text to specified fittowidth size
+                        do {
+                            fontSize(--fontsize);
+                        } while (ctx.measureText(txt).width > fittowidth);
+                        // limit to the maximum fontsize
+                        do {
+                            fontSize(--fontsize);
+                        } while (fontsize > maxfontsize);
+                        y += fontsize;
+                    }
+                    while ((x + ctx.measureText(txt).width / 2) > canvasWidth / 2) {
+                        --x;
+                        //fontSize(--fontsize);
+                    }
+                    // move text inside bottom edge
+                    do {
+                        y--
+                    } while (y > canvasHalfHeight - fontsize / 1.5);
+
+                    // clean area where text is drawn
+                    ctx.fillStyle = clock_faceColor;
+                    var x1 = x - (cleanwidth / 2);
+                    var y1 = y - (fontsize / 2) + (fontsize / 10);
+                    ctx.fillRect(
+                        x1,
+                        y1,
+                        cleanwidth,
+                        fontsize);
+
+                    // draw text
+                    ctx.fillStyle = clock_letterColor;
+                    fontSize(fontsize);
+                    ctx.fillText(txt, x, y);
+                    return {
+                        "x": x,
+                        "y": y,
+                        "fontsize": fontsize,
+                        "top": y - fontsize / 2,
+                        "bottom": y + fontsize / 2,
+                        "width": ctx.measureText(txt).width
+                    };
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+
+//endregion -------------------------------------------------------------------------------------- Draw clock functions
+
+            drawClock(true, true, true);//first init
+
+
+            clockInterval_Seconds = window.setInterval(function () {
+                drawClock(true, false, false);
+            }, 1000);
+
+            clockInterval_Minutes = window.setInterval(function () {
+                drawClock(true, true, false);
+            }, 1000 * 60);
+
+            clockInterval_Hours = window.setInterval(function () {
+                drawClock(true, true, true);
+            }, 1000 * 60 * 60);
+
+            function padToStringLength(str, len) {
+                while (str.length < len) {
+                    str = ' ' + str + ' ';
+                }
+                return str;
+            }
+
+            function drawClock(newSecond, newMinute, newHour) {
+                ctx.translate(clockCenter_X, clockCenter_Y);//canvas origin 0,0 is center of clock
+                getDayAndDate();
+
+                try {
+                    ctx.textBaseline = "middle";
+                    ctx.textAlign = "center";
+                    var dateTextPosition_X = 0;
+                    var dateTextPosition_Y = 0;
+
+                    if (newHour) {
+                        function displayDate_Portrait() {
+                            var positionedDate =
+                                drawText(
+                                    /**       text */ padToStringLength(daysee.DMY, 10),
+                                    /**          X */ 0,
+                                    /**          Y */ canvasHalfHeight,
+                                    /**   fontsize */ 10,
+                                    /**maxfontsize */ canvasHeight / 10,
+                                    /** fittowidth */ canvasWidth,
+                                    /** cleanwidth */ canvasWidth
+                                );
+
+                            dateFontSize = positionedDate.fontsize;
+                            clockBottom = parseInt(positionedDate.y - dateFontSize / 2);
+
+                            dateTextPosition_Y = parseInt(daysee.top + dateFontSize / 2);
+                            drawText(
+                                /**       text */ daysee.fullDate.dayname,
+                                /**          X */ 0,
+                                /**          Y */ dateTextPosition_Y,
+                                /**   fontsize */ dateFontSize,
+                                /**maxfontsize */ canvasHeight / 10,
+                                /** fittowidth */ false,
+                                /** cleanwidth */ canvasWidth
+                            );
+
+                            dateTextPosition_Y = dateTextPosition_Y + 10 + dateFontSize;
+                            drawText(
+                                /**       text */ daysee.fullDate.daypart,
+                                /**          X */ 0,
+                                /**          Y */ dateTextPosition_Y,
+                                /**   fontsize */ dateFontSize,
+                                /**maxfontsize */ canvasHeight / 10,
+                                /** fittowidth */ false,
+                                /** cleanwidth */ canvasWidth
+                            );
+                        }
+
+                        function displayDate_Lanscape() {
+                            dateTextPosition_X = canvasWidth / 4;
+                            var positionedDate =
+                                drawText(
+                                    /**       text */ daysee.DMY,
+                                    /**          X */ dateTextPosition_X,
+                                    /**          Y */ canvasHalfHeight,
+                                    /**   fontsize */ 0,
+                                    /**maxfontsize */ canvasHeight / 4,
+                                    /** fittowidth */ canvasHalfWidth,
+                                    /** cleanwidth */ canvasHalfWidth
+                                );
+
+                            dateFontSize = positionedDate.fontsize;
+                            clockBottom = parseInt(positionedDate.y - dateFontSize / 2);
+
+                            ctx.textBaseline = "middle";
+                            //dateFontSize += 20;
+                            dateTextPosition_Y = parseInt(daysee.top + dateFontSize / 2);
+                            drawText(
+                                /**       text */ daysee.fullDate.dayname,
+                                /**          X */ dateTextPosition_X,
+                                /**          Y */ dateTextPosition_Y,
+                                /**   fontsize */ dateFontSize,
+                                /**maxfontsize */ canvasHeight / 8,
+                                /** fittowidth */ false,
+                                /** cleanwidth */ canvasHalfWidth
+                            );
+
+                            dateTextPosition_Y = dateTextPosition_Y + 10 + dateFontSize;
+                            drawText(
+                                /**       text */ daysee.fullDate.daypart,
+                                /**          X */ dateTextPosition_X,
+                                /**          Y */ dateTextPosition_Y,
+                                /**   fontsize */ dateFontSize,
+                                /**maxfontsize */ canvasHeight / 8,
+                                /** fittowidth */ false,
+                                /** cleanwidth */ canvasHalfWidth
+                            );
+                        }
+
+                        if (deviceOrientationPortrait) {
+                            displayDate_Portrait();
+                            clockTop = parseInt(dateTextPosition_Y + dateFontSize / 2);
+                            clockHeight = parseInt(clockBottom - clockTop);//clockTop is negative
+                            clockRadius = parseInt(clockHeight / 2);
+                            if (clockHeight > canvasWidth) clockRadius = canvasHalfWidth;
+                            clockOffset_X = 0;
+                            //position clock centered between text
+                            clockOffset_Y = parseInt((clockBottom + clockTop) / 2);//clockTop is negative
+                        } else {
+                            displayDate_Lanscape();
+                            clockTop = -canvasHalfHeight;
+                            clockHeight = canvasHeight;
+                            if (clockHeight > canvasHalfWidth) {
+                                clockRadius = parseInt(canvasWidth / 4);
+                            } else {
+                                clockRadius = parseInt(clockHeight / 2);
+                            }
+                            clockOffset_X = -dateTextPosition_X;
+                            clockOffset_Y = 0;
+                        }
+                    }
+//region ------------------------------------------------------------------------------------- ### draw analog clock
+                    /* The whole clock needs to be redrawn to wipe out the previous CANVAS content */
+                    ctx.beginPath();//clock background color
+                    ctx.translate(clockOffset_X, clockOffset_Y);
+
+                    ctx.arc(0, 0, clockRadius, 0, parseInt(2 * Math.PI));
+                    ctx.fillStyle = clock_faceColor;
+                    ctx.fill();
+//region ------------------------------------------------------------------------------------- ### Draw clock numbers
+                    ctx.fillStyle = clock_letterColor;
+                    ctx.strokeStyle = clock_letterBorder;
+                    ctx.lineWidth = clock_letterBorderThinkness;
+                    for (var nmbr = 1; nmbr < 13; nmbr++) {
+
+                        var numberSize = (nmbr % 3 === 0) ? .3 : 0.2;// scale numbers,  3 6 9 12 are displayed bigger
+
+                        var numberStr = nmbr;
+                        if (display24hours && clockfullHours > 11) {
+                            numberStr += 12;
+                            numberSize *= .7; // 24 hour clock numbers are displayed smaller
+                        }
+
+                        fontSize(clockRadius * numberSize);
+                        var angle = nmbr * Math.PI / 6;                     // angle from 0,0 clock origin
+                        var numberoffset = clockRadius * 0.85;                   // draw number inside clock face
+                        ctx.rotate(angle);                                  // move to number position
+                        ctx.translate(0, -numberoffset);                    // set origin to center of Number
+                        ctx.rotate(-angle);                                 // move drawing position upright again
+                        ctx.strokeText(numberStr.toString(), 0, 0);         // draw outline
+                        ctx.fillText(numberStr.toString(), 0, 0);           // draw fill
+                        ctx.rotate(angle);                                  // rotate back to 0,0 clock origin
+                        ctx.translate(0, numberoffset);                     // set origin to center of clock
+                        ctx.rotate(-angle);                                 // stroke is upright again
+                    } // draw clock numbers
+//endregion -------------------------------------------------------------------------------------- Draw clock numbers
+                    var clockHandDirection = (clockHours * Math.PI / 6) + (clockMinutes * Math.PI / (6 * 60)) + (clockSeconds * Math.PI / (360 * 60));
+                    drawClockHand(
+                        analogClockOptions.hands.hour,
+                        clockHandDirection,
+                        clockRadius
+                    );
+                    clockHandDirection = (clockMinutes * Math.PI / 30) + (clockSeconds * Math.PI / (30 * 60));
+                    drawClockHand(
+                        analogClockOptions.hands.minute,
+                        clockHandDirection,
+                        clockRadius
+                    );
+                    clockHandDirection = (clockSeconds * Math.PI / 30);
+                    if (displaySeconds) drawClockHand(
+                        analogClockOptions.hands.second,
+                        clockHandDirection,
+                        clockRadius
+                    );
+
+                    ctx.rotate(clockHandDirection);
+                    var x = analogClockOptions.hands.minute.width * clockRadius;
+                    ctx.drawImage(dayseeIMG, -x / 2, -x / 2, x, x);
+                    ctx.rotate(-clockHandDirection);
+
+
+                    ctx.translate(-clockOffset_X, -clockOffset_Y);
+//endregion -------------------------------------------------------------------------------------- draw analog clock
+                    if (traceinfo) {
+
+                        drawHline(clockTop);
+                        drawHline(0, 'green');
+                        drawHline(clockBottom);
+                        drawHline(clockOffset_Y, 'lightgreen');
+                        drawLine(0, clockTop, 0, clockBottom, 4, 'orange');
+
+                        var info = canvasWidth + ' x ' + canvasHeight
+                            + ' %' + parseInt((canvasWidth / canvasHeight) * 10) / 10
+                            + ' '
+//                                + '  s: ' + screen.availWidth + ' x ' + screen.availHeight
+//                                + '  c: ' + clockHeight + ' x ' + clockRadius + ' (' + clockTop + ' / ' + clockBottom
+                            + dateFontSize
+                            + '  d: ' + daysee.top + ' x ' + daysee.bottom;
+                        drawText(
+                            info
+                                /*          X */, 0
+                                /*          Y */, daysee.bottom - 7
+                                /*   fontsize */, 10
+                                /* fittowidth */, false
+                        );
+                        //drawText(clockDate.toLocaleTimeString(), 0, daysee.top + 10, 20);
+                    }
+
+                }
+                catch (err) {
+                    programmersError(err);
+                }
+                ctx.translate(-clockCenter_X, -clockCenter_Y);//canvas origin 0,0 is center of clock
+
+            }
+
+        } catch (err) {
+            programmersError(err);
+        }
+    }
+</script>
+</body>
+<!--
+
+rasp-pi: http://jpbrown.info/projects/view/dynamic-alzheimers-clock/
+clock chronometer: http://gtsparkplugs.com/JSClock.html
+
+css animation and images: https://github.com/fofr/paulrhayes.com-experiments/tree/master/clock
+
+CSS animated alarmclock: http://codepen.io/MischaAbakumova/pen/qrByWp?editors=1100
+
+CSS only Mondriaan clock: https://codepen.io/slyka85/pen/xgRmpa
+
+Digital clock with rotating numbers
+https://codepen.io/DawidKrajewski/pen/dPpMXN
+
+
+Configure device:
+
+Disable auto reboot on Windows
+http://www.laptopmag.com/articles/disable-automatic-restart-windows
+
+Run Edge browser in Kiosk mode
+https://blogs.msdn.microsoft.com/askie/2015/04/29/how-to-hide-tabs-in-ie11-and-load-in-kiosk-mode-with-or-without-address-bar/
+
+
+-->
+</html>
